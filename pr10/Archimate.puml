@@ -1,0 +1,94 @@
+@startuml
+nwdiag {
+  // Определение сети Интернет
+  network Internet {
+    address = "0.0.0.0/0"
+    internet [shape = cloud];
+  }
+
+  // Сеть сервисов
+  network Services {
+    address = "10.0.1.0/24"
+
+    // Ноды в сети Services
+    krakend_gateway [address = "10.0.1.1", description = "KrakenD Gateway"];
+    user_service [address = "10.0.1.2", description = "User Service"];
+    content_service [address = "10.0.1.3", description = "Content Service"];
+    scheduler_service [address = "10.0.1.4", description = "Scheduler Service"];
+    analytics_service [address = "10.0.1.5", description = "Analytics Service"];
+  }
+
+  // Сеть баз данных
+  network Databases {
+    address = "10.0.2.0/24"
+
+    // Ноды в сети Databases
+    user_db [address = "10.0.2.1", description = "PostgreSQL (User Service)"];
+    content_db [address = "10.0.2.2", description = "PostgreSQL (Content Service)"];
+    scheduler_db [address = "10.0.2.3", description = "PostgreSQL (Scheduler Service)"];
+    analytics_db [address = "10.0.2.4", description = "PostgreSQL (Analytics Service)"];
+    redis_db [address = "10.0.2.5", description = "RedisDB"];
+  }
+
+  // Сеть шины сообщений
+  network MessageBus {
+    address = "10.0.3.0/24"
+
+    // Ноды в сети Message Bus
+    kafka [address = "10.0.3.1", description = "Kafka"];
+  }
+
+  // Сеть логирования и мониторинга
+  network LoggingandMonitoring {
+    address = "10.0.4.0/24"
+
+    // Ноды в сети Logging and Monitoring
+    graylog [address = "10.0.4.1", description = "Graylog"];
+    prometheus [address = "10.0.4.2", description = "Prometheus"];
+    grafana [address = "10.0.4.3", description = "Grafana"];
+    jaeger [address = "10.0.4.4", description = "Jaeger"];
+  }
+
+  // Определение связей между нодами
+  internet -- krakend_gateway;
+
+  krakend_gateway -- user_service;
+  krakend_gateway -- content_service;
+  krakend_gateway -- scheduler_service;
+  krakend_gateway -- analytics_service;
+
+  user_service -- user_db;
+  content_service -- content_db;
+  scheduler_service -- scheduler_db;
+  analytics_service -- analytics_db;
+
+  user_service -- redis_db;
+
+  user_service -- kafka;
+  content_service -- kafka;
+  scheduler_service -- kafka;
+  analytics_service -- kafka;
+
+  user_service -- graylog;
+  content_service -- graylog;
+  scheduler_service -- graylog;
+  analytics_service -- graylog;
+
+  prometheus -- user_service;
+  prometheus -- content_service;
+  prometheus -- scheduler_service;
+  prometheus -- analytics_service;
+  prometheus -- user_db;
+  prometheus -- content_db;
+  prometheus -- scheduler_db;
+  prometheus -- analytics_db;
+  prometheus -- redis_db;
+
+  grafana -- prometheus;
+
+  jaeger -- user_service;
+  jaeger -- content_service;
+  jaeger -- scheduler_service;
+  jaeger -- analytics_service;
+}
+@enduml

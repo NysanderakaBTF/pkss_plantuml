@@ -1,0 +1,43 @@
+@startuml
+!include style.puml
+
+package "UI" {
+  [LoginForm]
+  [ControlPanel]
+
+}
+package "Сервисный слой" {
+  [Gateway]
+  [PostService]
+  [Queue Service]
+  [NetworksService]
+  [AuthService]
+}
+package "Доступ к данным" {
+  [PostRepository]
+  [QueueRepository]
+  [UserRepository]
+  [NetworksRepository]
+}
+
+package "AI service" {
+    [KW AI]
+    [Tags AI]
+}
+
+[LoginForm] -- [Gateway]
+[ControlPanel] -- [Gateway]
+[Gateway] -- [PostService]
+[Gateway] -- [Queue Service]
+[Gateway] -- [NetworksService]
+[Gateway] -- [AuthService]
+
+[PostService] -- [Queue Service]
+
+[PostService] -- [Tags AI]
+[PostService] -- [KW AI]
+[Queue Service] -- [QueueRepository]
+[PostService] -- [PostRepository]
+[NetworksService] -- [NetworksRepository]
+[AuthService] -- [UserRepository]
+@enduml

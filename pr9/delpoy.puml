@@ -1,0 +1,19 @@
+@startuml
+!include style.puml
+node PostgresServer
+node RedisServer
+
+node WebServer
+node AIServer
+
+WebServer -- AIServer : HTTP запросы
+WebServer -- PostgresServer : SQL запросы
+WebServer -- RedisServer
+node Gateway
+Gateway -- WebServer : HTTP запросы
+
+node Frontend
+Gateway -- Frontend : HTTP запросы
+
+
+@enduml

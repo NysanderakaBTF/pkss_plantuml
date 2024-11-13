@@ -1,0 +1,27 @@
+@startuml
+!include style.puml
+
+package DatabseServer {
+    database "Redis"
+    database "<$postgresql>Postgres"
+}
+package Backend {
+
+    [Gateway]
+    [Auth Service] - [Gateway]
+    [Post Service] -- [Gateway]
+    [Queue Service] -- [Gateway]
+    [AI Service]
+}
+
+!include devicons2/postgresql.puml
+
+[Queue Service] -- "Redis"
+[Post Service] -- [AI Service]
+[Post Service] -- "<$postgresql>Postgres"
+[Auth Service] -- "<$postgresql>Postgres"
+[Post Service] -- [Queue Service]
+
+
+[Gateway] -- [Frontend]
+@enduml

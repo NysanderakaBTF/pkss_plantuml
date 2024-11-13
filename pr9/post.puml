@@ -1,0 +1,18 @@
+@startuml
+!include style.puml
+[*] --> dataEntered
+
+dataEntered --> DataValidation
+DataValidation --> [*] : validation error
+DataValidation --> PostSaved : Validation Successfull
+
+PostSaved --> AddToQueue
+PostProcessing <-- AddToQueue
+
+
+PostProcessing --> PostUpdated
+
+PostUpdated --> PostedToApi
+PostedToApi --> [*]
+
+@enduml

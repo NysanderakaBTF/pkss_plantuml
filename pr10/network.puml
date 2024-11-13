@@ -1,0 +1,118 @@
+@startuml
+title ArchiMate Diagram for Social Media Automation System
+
+' Define styles for rectangles with rounded corners
+skinparam rectangle<<behavior>> {
+    roundCorner 25
+}
+
+' Define sprites for different element types
+sprite $bProcess jar:archimate/business-process
+sprite $aService jar:archimate/application-service
+sprite $aComponent jar:archimate/application-component
+
+' Define Business Processes
+rectangle "Content Creation" as ContentCreation <<$bProcess>><<behavior>> #Business
+rectangle "Content Scheduling" as ContentScheduling <<$bProcess>><<behavior>> #Business
+rectangle "Content Publishing" as ContentPublishing <<$bProcess>><<behavior>> #Business
+rectangle "Audience Engagement" as AudienceEngagement <<$bProcess>><<behavior>> #Business
+rectangle "Analytics and Reporting" as AnalyticsReporting <<$bProcess>><<behavior>> #Business
+rectangle "User Authentication" as UserAuthentication <<$bProcess>><<behavior>> #Business
+rectangle "Template Management" as TemplateManagement <<$bProcess>><<behavior>> #Business
+
+' Define Application Services
+rectangle "User Service" as UserService <<$aService>><<behavior>> #Application
+rectangle "Content Service" as ContentService <<$aService>><<behavior>> #Application
+rectangle "Scheduler Service" as SchedulerService <<$aService>><<behavior>> #Application
+rectangle "Analytics Service" as AnalyticsService <<$aService>><<behavior>> #Application
+rectangle "Template Service" as TemplateService <<$aService>><<behavior>> #Application
+
+' Define Application Components
+rectangle "API Gateway\n(KrakenD)" as APIGateway <<$aComponent>> #Application
+rectangle "Kafka Message Bus" as KafkaBus <<$aComponent>> #Application
+rectangle "RedisDB" as RedisDB <<$aComponent>> #Application
+rectangle "PostgreSQL\n(User Service)" as UserDB <<$aComponent>> #Application
+rectangle "PostgreSQL\n(Content Service)" as ContentDB <<$aComponent>> #Application
+rectangle "PostgreSQL\n(Scheduler Service)" as SchedulerDB <<$aComponent>> #Application
+rectangle "PostgreSQL\n(Analytics Service)" as AnalyticsDB <<$aComponent>> #Application
+rectangle "Graylog" as Graylog <<$aComponent>> #Application
+rectangle "Prometheus" as Prometheus <<$aComponent>> #Application
+rectangle "Grafana" as Grafana <<$aComponent>> #Application
+rectangle "Jaeger" as Jaeger <<$aComponent>> #Application
+
+' Define External Systems (Social Media Platforms)
+rectangle "Facebook API" as FacebookAPI <<$aComponent>> #Application
+rectangle "Twitter API" as TwitterAPI <<$aComponent>> #Application
+rectangle "Instagram API" as InstagramAPI <<$aComponent>> #Application
+
+' Relationships between Business Processes and Application Services
+ContentCreation -down-> ContentService : "Uses"
+ContentScheduling -down-> SchedulerService : "Uses"
+ContentPublishing -down-> SchedulerService : "Initiates"
+AudienceEngagement -down-> AnalyticsService : "Monitors via"
+AnalyticsReporting -down-> AnalyticsService : "Generates reports from"
+UserAuthentication -down-> UserService : "Handled by"
+TemplateManagement -down-> TemplateService : "Manages"
+
+' Relationships between Application Services and Components
+UserService -down-> UserDB : "Stores data in"
+ContentService -down-> ContentDB : "Stores data in"
+SchedulerService -down-> SchedulerDB : "Stores data in"
+AnalyticsService -down-> AnalyticsDB : "Stores data in"
+UserService -down-> RedisDB : "Stores sessions in"
+
+' Relationships between Application Services and KafkaBus
+UserService -right-> KafkaBus : "Communicates via"
+ContentService -right-> KafkaBus : "Communicates via"
+SchedulerService -right-> KafkaBus : "Communicates via"
+AnalyticsService -right-> KafkaBus : "Communicates via"
+
+' Relationships between Application Services and External Systems
+SchedulerService -right-> FacebookAPI : "Publishes content to"
+SchedulerService -right-> TwitterAPI : "Publishes content to"
+SchedulerService -right-> InstagramAPI : "Publishes content to"
+
+' Relationships between Application Services and Monitoring Tools
+UserService -left-> Graylog : "Sends logs to"
+ContentService -left-> Graylog : "Sends logs to"
+SchedulerService -left-> Graylog : "Sends logs to"
+AnalyticsService -left-> Graylog : "Sends logs to"
+
+UserService -left-> Prometheus : "Exposes metrics to"
+ContentService -left-> Prometheus : "Exposes metrics to"
+SchedulerService -left-> Prometheus : "Exposes metrics to"
+AnalyticsService -left-> Prometheus : "Exposes metrics to"
+
+Prometheus -up-> Grafana : "Provides data for"
+
+UserService -left-> Jaeger : "Traced by"
+ContentService -left-> Jaeger : "Traced by"
+SchedulerService -left-> Jaeger : "Traced by"
+AnalyticsService -left-> Jaeger : "Traced by"
+
+' Relationships between Template Service and Content Service
+TemplateService -up-> ContentService : "Provides templates to"
+
+' Relationships between API Gateway and Application Services
+APIGateway -down-> UserService : "Routes requests to"
+APIGateway -down-> ContentService : "Routes requests to"
+APIGateway -down-> SchedulerService : "Routes requests to"
+APIGateway -down-> AnalyticsService : "Routes requests to"
+APIGateway -down-> TemplateService : "Routes requests to"
+
+' Relationships between Business Processes (Sequence)
+ContentCreation -right->> ContentScheduling
+ContentScheduling -right->> ContentPublishing
+ContentPublishing -right->> AudienceEngagement
+AudienceEngagement -right->> AnalyticsReporting
+
+' Legend
+legend left
+<$bProcess> : Business Process
+<$aService> : Application Service
+<$aComponent> : Application Component
+#Business : Business Layer
+#Application : Application Layer
+endlegend
+
+@enduml
