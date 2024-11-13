@@ -1,0 +1,18 @@
+@startuml
+!include plugin/C4_Context.puml
+' Назначение легенды
+LAYOUT_LEFT_RIGHT()
+title C4 Diagram - Context Level
+' Определение элементов
+Person(customer, "Пользователь", "Пользователь, использующий систему")
+System(system, "SMM Automated", "Система автоматизации соцаильных сетей")
+System_Ext(AIsystem, "ИИ Система", "Система искусственного интеллекта, используемая приложением")
+System_Ext(paymentGateway, "Банковская система", "Сторонний сервис обработки платежей")
+System_Ext(social_network, "Social API", "API социальных сетей")
+
+' Определение взаимодействий
+Rel(customer, system, "Создает и планирует посты")
+Rel(system, paymentGateway, "Обрабатывает платежи через")
+Rel(system, social_network, "Отправляет данные на публикацию")
+Rel(system, AIsystem, "Генерирует теги с помощью")
+@enduml

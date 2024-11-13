@@ -1,0 +1,39 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+LAYOUT_LEFT_RIGHT()
+title C4 Diagram - Container Level
+
+' Определение людей
+Person(customer, "Пользователь", "Пользователь, использующий систему")
+' Определение системы
+System_Boundary(system_boundary, "Онлайн-магазин") {
+    Container(webApp, "Фронтенд", "JavaScript/VueJS", "Отображает веб-интерфейс для пользователей")
+    Container(gateway, "Шлюз", "Nginx", "Производит роутинг запросов")
+    Container(postingsystem, "Сервис управления постами", "Python/FastAPI", "Управляет постами и форматирует их")
+    Container(usersystem, "Сервис пользоваетелей", "Python/FastAPI", "Управляет пользователями и подписками")
+    Container(queuesystem, "Сервис очереди", "Python/FastAPI", "Управляет расписанием публикации")
+    ContainerDb(database, "База данных", "PostgreSQL", "Хранит данные о пользователях и постах")
+}
+' Внешние системы
+System_Ext(AIsystem, "ИИ Система", "Система искусственного интеллекта, используемая приложением")
+System_Ext(paymentGateway, "Банковская система", "Сторонний сервис обработки платежей")
+System_Ext(social_network, "Social API", "API социальных сетей")
+' Взаимодействия
+
+Rel(customer, webApp, "Использует")
+Rel(webApp, gateway, "API запросы")
+Rel(gateway, webApp, "Ответы")
+
+BiRel_D(gateway, postingsystem, "HTTP Запросы")
+BiRel_D(gateway, usersystem, "HTTP Запросы")
+BiRel_D(gateway, queuesystem, "HTTP Запросы")
+
+BiRel_D(postingsystem, database, "SQL Запросы/Ответы")
+BiRel_D(usersystem, database, "SQL Запросы/Ответы")
+BiRel_D(queuesystem, database, "SQL Запросы/Ответы")
+
+Rel(postingsystem, social_network, "Публикует посты")
+Rel(usersystem, paymentGateway, "Производит оплату подписки")
+Rel(postingsystem, AIsystem, "Добавляет теги к пользователю")
+
+@enduml
